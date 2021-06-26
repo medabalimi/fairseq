@@ -357,11 +357,17 @@ class W2lFairseqLMDecoder(W2lDecoder):
         self.idx_to_wrd = {}
 
         checkpoint = torch.load(args.kenlm_model, map_location="cpu")
+        
+        checkpoint = torch.load(args.kenlm_model, map_location="cpu")
+        state=checkpoint_utils.load_checkpoint_to_cpu(args.kenlm_model)
+        lm_args = state.get("cfg",None)
+        if lm_args is None:
+            lm_args =  convert_namespace_to_omegaconf(state["args"])
 
-        if "cfg" in checkpoint and checkpoint["cfg"] is not None:
-            lm_args = checkpoint["cfg"]
-        else:
-            lm_args = convert_namespace_to_omegaconf(checkpoint["args"])
+        #if "cfg" in checkpoint and checkpoint["cfg"] is not None:
+        #        lm_args = checkpoint["cfg"]
+        #    else:
+        #        lm_args = convert_namespace_to_omegaconf(checkpoint["args"])
 
         with open_dict(lm_args.task):
             lm_args.task.data = osp.dirname(args.kenlm_model)
